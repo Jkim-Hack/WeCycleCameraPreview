@@ -73,3 +73,14 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+
+
+  fonts:
+     - family:  ButtonIcons
+       fonts:
+           - asset: assets/icons/ButtonIcons.ttf
+     - family:  Segoe
+       fonts:
+          - asset: assets/fonts/Segoe_UI_Bold.ttf
+
