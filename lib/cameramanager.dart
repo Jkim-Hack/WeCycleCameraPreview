@@ -228,13 +228,29 @@ class _CameraManagerState extends State<CameraManager>
 
 }
 
-class DisplayPictureScreen {
-}
+class DisplayImageToScreen extends StatefulWidget{
 
-class DisplayImageToScreen extends StatelessWidget {
   static const platform = const MethodChannel('com.teamblnd/imgclassif');
   final String imagePath;
   const DisplayImageToScreen({Key key, this.imagePath}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return DisplayedImageScreen();
+  }
+
+}
+
+class DisplayedImageScreen extends State<DisplayImageToScreen>{
+
+  String imagePath;
+
+  @override
+  void initState() {
+    imagePath = widget.imagePath;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -253,7 +269,9 @@ class DisplayImageToScreen extends StatelessWidget {
   void onPredictButtonPressed(){
     isRecyclableObject(this.imagePath).then((bool value) {
       if(value){
+        setState(() {
 
+        });
       }
     });
   }
@@ -261,11 +279,10 @@ class DisplayImageToScreen extends StatelessWidget {
   Future<bool> isRecyclableObject(String imagePath) async {
     bool isRecyclable = false;
     try{
-      isRecyclable = await platform.invokeMethod('getClassificationResult',imagePath);
+      isRecyclable = await DisplayImageToScreen.platform.invokeMethod('getClassificationResult',imagePath);
     } on PlatformException catch(e){
       log("Failed!: " + e.message);
     }
     return isRecyclable;
   }
-
 }
