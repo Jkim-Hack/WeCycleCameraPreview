@@ -4,8 +4,8 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:video_player/video_player.dart';
 
 import 'CirclePainter.dart';
 import 'main.dart';
@@ -119,6 +119,24 @@ class _CameraManagerState extends State<CameraManager>
   );
   }
 
+  Widget _profileButton(){
+    return Align(
+      alignment: Alignment.topLeft,
+      child: RawMaterialButton(
+        onPressed: onSnapButtonPressed,
+        shape: CircleBorder().scale(2.0),
+        child: CustomPaint(
+          painter: CirclePainter(
+              color: Colors.white,
+              strokeWidth: 5,
+              isAntialias: true,
+              paintingStyle: PaintingStyle.stroke
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _cameraPreviewWidget() {
     if(controller != null && controller.value.isInitialized){
       final size = MediaQuery.of(context).size;
@@ -170,6 +188,12 @@ class _CameraManagerState extends State<CameraManager>
           log(imagePath);
           //controller?.dispose();
           //controller = null;
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+              builder: (context) => DisplayImageToScreen(imagePath: imagePath),
+              )
+          );
         });
         if (filePath != null){}
           //showInSnackBar('Picture saved to $filePath');
@@ -201,4 +225,47 @@ class _CameraManagerState extends State<CameraManager>
     return filePath;
   }
   String timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
+
+}
+
+class DisplayPictureScreen {
+}
+
+class DisplayImageToScreen extends StatelessWidget {
+  static const platform = const MethodChannel('com.teamblnd/imgclassif');
+  final String imagePath;
+  const DisplayImageToScreen({Key key, this.imagePath}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return FittedBox(
+      child: Image.file(new File(imagePath)),
+      fit: BoxFit.fill,
+    );
+  }
+
+  Widget predictButton(){
+    return FloatingActionButton(
+
+    );
+  }
+
+  void onPredictButtonPressed(){
+    isRecyclableObject(this.imagePath).then((bool value) {
+      if(value){
+
+      }
+    });
+  }
+
+  Future<bool> isRecyclableObject(String imagePath) async {
+    bool isRecyclable = false;
+    try{
+      isRecyclable = await platform.invokeMethod('getClassificationResult',imagePath);
+    } on PlatformException catch(e){
+      log("Failed!: " + e.message);
+    }
+    return isRecyclable;
+  }
+
 }
